@@ -16,6 +16,7 @@
 * Actuator
 * RabbitMQ 
 * Docker
+* Swagger
 * Liquibase
 * MongoDB 
 * Spring Data 
