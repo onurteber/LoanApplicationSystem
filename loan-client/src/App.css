@@ -1,0 +1,58 @@
+.mainColumn {
+  margin: auto;
+  padding: 10px;
+}
+.title{
+  text-align: center;
+  padding-top: 25%;
+}
+.wrappper {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: auto;
+  background-color: #f2f2f0;
+}
+
+.clr10 {
+  float: none; 
+  width: 100%; 
+  height: 10px; 
+  clear: both;
+}
+
+
+@media screen and (max-width: 992px) {
+  .title{
+    text-align: center;
+    padding-top: 25%;
+    font-size: 23px;
+  }
+  .wrappper {
+    max-height: 100vh;
+    overflow: auto;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .title{
+    text-align: center;
+    padding-top: 15%;
+    font-size: 18px;
+  }
+  .wrappper {
+    max-height: 100vh;
+    overflow: auto;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .title{
+    text-align: center;
+    padding-top: 20%;
+    font-size: 18px;
+  }
+  .wrappper {
+    max-height: 100vh;
+    overflow: auto;
+  }
+}
