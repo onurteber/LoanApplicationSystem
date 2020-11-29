@@ -42,13 +42,8 @@ class App extends Component {
         let mes = JSON.parse(res.request.response);
         this.setState({ message: mes.message})
         this.setState({ showModal: true });
-      }).catch(err => {
-        let errMes = JSON.parse(err.request.response);
-        if ( errMes.message === "Out of the task rules"){
-          this.setState({ message: "Başvuru durumu belirtilen task kuralları dışında kalmıştır. Lütfen tekrar deneyiniz."})
-        } else {
-          this.setState({ message: "Lütfen tekrar deneyiniz."})
-        }
+      }).catch(err => {;
+        this.setState({ message: "Lütfen tekrar deneyiniz."})
         this.setState({ showModal: true });
       });
       event.preventDefault();

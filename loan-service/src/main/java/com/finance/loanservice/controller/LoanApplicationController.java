@@ -24,7 +24,7 @@ public class LoanApplicationController {
             response = loanApplicationServiceImpl.save(creditApplication);
             return ResponseEntity.ok(response);
         }  catch (Exception e) {
-            throw new Exception(e.getCause().getMessage());
+            throw new Exception(e);
         }
     }
 

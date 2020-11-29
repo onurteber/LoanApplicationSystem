@@ -19,8 +19,8 @@
 * Swagger
 * Liquibase
 * MongoDB 
-* Spring Data 
+* Spring Data
+* Mockito 
 * Lombok 
-* ModelMpper
 * ReactJS
 * React-Bootstrap

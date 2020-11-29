@@ -7,14 +7,11 @@ import com.finance.loanservice.dto.enums.NotificationType;
 import com.finance.loanservice.entity.LoanApplication;
 import com.finance.loanservice.repository.LoanApplicationRepository;
 import com.finance.loanservice.service.LoanApplicationService;
-import com.finance.loanservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -24,7 +21,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     private final LoanApplicationRepository loanApplicationRepository;
     private final NotificationProducer notificationService;
     private final MockCreditScoreService mockCreditScoreService;
-    private final ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -38,26 +34,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                     creditApplicationResponse.setStatus(false);
                 } else if (isBetween(500, 1000, creditScore)) {
                     creditApplicationResponse.setStatus(true);
-                    // Aylık geliri beş bin tl nin üzerindeyse ve skoru 500-1000 olduğu durumda veya 500 e eşit olduğu durum için kural belirtilmemiş.
-                    // Bu durum için exception fırlatarak dönüş yapıyorum.
                     if(creditApplicationRequest.getMonthlyIncome() < 5000) {
                         creditApplicationResponse.setLimit(10000);
                     } else {
-                        throw new UnsupportedOperationException("Out of the task rules");
+                        // Aylık geliri beş bin tl nin üzerindeyse ve skoru 500-1000 olduğu durumda veya 500 e eşit olduğu durum için kural belirtilmemiş.
+                        // Bu durum için başvuru reddi dönüşü yapıldı.
+                        creditApplicationResponse.setLimit(0);
+                        creditApplicationResponse.setStatus(false);
+                        System.out.println("Out of the task rules");
                     }
                 } else if (isBetween(999,1901,creditScore)) {
                     creditApplicationResponse.setLimit(creditApplicationRequest.getMonthlyIncome() * 4);
                     creditApplicationResponse.setStatus(true);
                 } else {
-                    throw new UnsupportedOperationException("Out of the task rules");
+                    creditApplicationResponse.setLimit(0);
+                    creditApplicationResponse.setStatus(false);
+                    System.out.println("Out of the task rules");
                 }
-                modelMapper.map(creditApplicationRequest,creditApplicationResponse);
-                LoanApplication save = loanApplicationRepository.save(modelMapper.map(creditApplicationResponse, LoanApplication.class));
+                loanApplicationResponseDtoMapper(creditApplicationRequest,creditApplicationResponse);
+                LoanApplication save = loanApplicationRepository.save(loanApplicationMapper(creditApplicationResponse));
                 notificationService.sendToQueue(prepareNotification(save));
                 creditApplicationResponse.setMessage(getMessage(save));
                 return creditApplicationResponse;
-            } catch (UnsupportedOperationException e) {
-                throw new UnsupportedOperationException(e);
+
             } catch (Exception e) {
                 throw new Exception(e);
             }
@@ -90,5 +89,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                     " kredi başvurunuz reddedilmiştir. İyi günler dileriz.";
         }
         return message;
+    }
+
+    private LoanApplicationResponseDto loanApplicationResponseDtoMapper(LoanApplicationRequestDto requestDto, LoanApplicationResponseDto responseDto){
+        responseDto.setTckn(requestDto.getTckn());
+        responseDto.setPhone(requestDto.getPhone());
+        responseDto.setMonthlyIncome(requestDto.getMonthlyIncome());
+        responseDto.setName(requestDto.getName());
+        responseDto.setLastName(requestDto.getLastName());
+        return responseDto;
+    }
+
+    private LoanApplication loanApplicationMapper(LoanApplicationResponseDto responseDto) {
+        LoanApplication loanApp = new LoanApplication();
+        loanApp.setLastName(responseDto.getLastName());
+        loanApp.setMonthlyIncome(responseDto.getMonthlyIncome());
+        loanApp.setName(responseDto.getName());
+        loanApp.setPhone(responseDto.getPhone());
+        loanApp.setLimit(responseDto.getLimit());
+        loanApp.setTckn(responseDto.getTckn());
+        loanApp.setStatus(responseDto.isStatus());
+        return loanApp;
     }
 }
