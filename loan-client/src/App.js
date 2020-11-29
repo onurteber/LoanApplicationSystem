@@ -17,7 +17,6 @@ class App extends Component {
   }
 
   handleChange(event) {
-    console.log(this.state.kvkk)
     if (event.target.id === "kvkk") {
       this.setState({ kvkk: !this.state.kvkk });
     } else {
@@ -26,7 +25,6 @@ class App extends Component {
   }
 
   handleSubmit(event) {
-    debugger
     if (this.isValidation) {
       axios({
         method: 'post',
@@ -63,7 +61,6 @@ class App extends Component {
  
 
   isValidation() {
-    debugger
     if (this.state.name !== "" && this.state.lastName !== "" && this.state.tckn !== "" && this.state.kvkk === true
       && (this.state.monthlyIncome !== "" || this.state.monthlyIncome !== undefined) && (this.state.phone !== "" && this.state.phone.length >= 10)) {
       return true;
@@ -98,7 +95,7 @@ class App extends Component {
                 </Form.Text>
               </Form.Group>
               <Form.Group controlId="kvkk">
-                <Form.Check type="checkbox" onChange={this.handleChange} label="Başvuru koşullarını onaylıyorum." />
+                <Form.Check type="checkbox" required onChange={this.handleChange} label="Başvuru koşullarını onaylıyorum." />
               </Form.Group>
               <Button variant="primary" style={{cursor: "pointer"}} type="submit" size="md" block>Onay</Button>
             </Form>
